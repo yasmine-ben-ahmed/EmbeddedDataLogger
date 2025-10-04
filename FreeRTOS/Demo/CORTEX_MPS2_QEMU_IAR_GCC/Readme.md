@@ -1,53 +1,101 @@
-# Running with VSCode Launch Configurations
+# Embedded Data Logger Project
 
-## Prerequisites
-* Install [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) in VSCode.
-* Install [arm-none-eabi-gcc](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads).
-* Install GNU make utility.
-* Ensure the required binaries are in PATH with ```arm-none-eabi-gcc --version```, ```arm-none-eabi-gdb --version```, and ```make --version```.
+## Overview
+This project is a simulated **Embedded Data Logger** using **FreeRTOS** on a Cortex-M microcontroller architecture (via QEMU).  
+It reads sensor data (temperature, humidity, and light), processes averages, detects rapid temperature changes, logs the data, and handles commands.
 
-## Building and Running
-1. Open VSCode to the folder ```FreeRTOS/Demo/CORTEX_MPS2_QEMU_IAR_GCC```.
-2. Open ```.vscode/launch.json```, and ensure the ```miDebuggerPath``` variable is set to the path where arm-none-eabi-gdb is on your machine.
-3. Open ```main.c```, and set ```mainCREATE_SIMPLE_BLINKY_DEMO_ONLY``` to ```1``` to generate just the [simply blinky demo](https://www.freertos.org/a00102.html#simple_blinky_demo).
-4. On the VSCode left side panel, select the “Run and Debug” button. Then select “Launch QEMU RTOSDemo” from the dropdown on the top right and press the play button. This will build, run, and attach a debugger to the demo program.
+The project is fully implemented with FreeRTOS tasks, queues, and static memory allocation for safe, real-time operation.
 
-## Tracing with Percepio View
-This demo project includes Percepio TraceRecorder, configured for snapshot tracing with Percepio View or Tracealyzer.
-Percepio View is a free tracing tool from Percepio, providing the core features of Percepio Tracealyzer but limited to snapshot tracing.
-No license or registration is required. More information and download is found at [Percepio's product page for Percepio View](https://traceviewer.io/get-view?target=freertos).
+---
 
-### TraceRecorder Integration
-If you like to study how TraceRecorder is integrated, the steps for adding TraceRecorder are tagged with "TODO TraceRecorder" comments in the demo source code.
-This way, if using an Eclipse-based IDE, you can find a summary in the Tasks window by selecting Window -> Show View -> Tasks (or Other, if not listed).
-See also [the official getting-started guide](https://traceviewer.io/getting-started-freertos-view).
+## Features
 
-### Usage with GDB
-To save the TraceRecorder trace, start a debug session with GDB.
-Halt the execution and the run the command below. 
-This saves the trace as trace.bin in the build/gcc folder.
-Open the trace file in Percepio View or Tracealyzer.
+- **Sensor Reading**: Simulates temperature, humidity, and light sensors.
+- **Data Processing**: Calculates average temperature and humidity over samples.
+- **Alerts**: Detects rapid temperature changes and prints alerts in red.
+- **Data Logging**: Logs sensor data for analysis.
+- **System Monitoring**: Monitors system heap usage and error counts.
+- **Command Handling**: Supports simulated commands (`STATUS`, `READ_SENSORS`, `CALIBRATE`).
 
-If using an Eclipse-based IDE, run the following command in the "Debugger Console":
-```
-dump binary value trace.bin *RecorderDataPtr
-```
+---
 
-If using VS Code, use the "Debug Console" and add "-exec" before the command:
-```
--exec dump binary value trace.bin *RecorderDataPtr
-```
+## Project Structure
 
-Note that you can typically copy/paste this command into the debug console.
+EmbeddedDataLogger/
+├── FreeRTOS/ # FreeRTOS source files
+├── Demo/ # Demo project files
+├── build/ # Build output (binaries)
+├── main.c # Main source code (tasks and scheduler)
+├── README.md # This file
+└── Makefile / project files
 
 
-### Usage with IAR Embedded Workbench for Arm
-Launch the IAR debugger. With the default project configuration, this should connect to the QEMU GDB server.
-To save the trace, please refer to the "Snapshot Mode" guide at [https://percepio.com/iar](https://percepio.com/iar).
-In summary:
-- Download the IAR macro file [save_trace_buffer.mac](https://percepio.com/downloads/save_trace_buffer.mac) (click "save as")
-- Add the macro file in the project options -> Debugger -> Use Macro File(s). 
-- Start debugging and open View -> Macros -> Debugger Macros.
-- Locate and run "save_trace_buffer". Open the resulting "trace.hex" in Percepio View or Tracealyzer.
+---
 
+## Tasks Overview
+
+| Task Name          | Priority                  | Purpose |
+|-------------------|---------------------------|---------|
+| SensorReaderTask   | High (SENSOR_TASK_PRIO)  | Read sensors and send data to queue |
+| DataProcessorTask  | Medium (PROCESS_TASK_PRIO)| Calculate averages and generate alerts |
+| AlertTask          | Low (ALERT_TASK_PRIO)     | Print alert messages |
+| DataLoggerTask     | Low (LOGGER_TASK_PRIO)    | Log sensor data |
+| SystemMonitorTask  | Medium (MONITOR_TASK_PRIO)| Monitor system health |
+| CommandHandlerTask | Medium (COMMAND_TASK_PRIO)| Handle commands from queue |
+
+---
+
+## Dependencies
+
+- [FreeRTOS](https://www.freertos.org/)
+- GCC ARM toolchain
+- QEMU ARM emulator
+
+---
+
+## How to Run
+
+1. **Build the project** using GCC (IAR or other toolchains can also be used).  
+2. **Run in QEMU**:
+```bash
+qemu-system-arm -machine mps2-an385 -cpu cortex-m3 \
+-kernel build/output/RTOSDemo.out \
+-monitor none -nographic -serial stdio
+
+
+Observe the logs in the console:
+
+Sensor readings
+
+Processed averages
+
+Alerts for rapid temperature changes
+
+System monitor messages
+
+Command handling messages
+
+Sample Output
+
+--- SENSOR LOG START ---
+| Tick | Temp(°C) | Humidity(%) | Light(lux) |
+---------------------------------------------
+| 1    | 23.5     | 45.32       | 400        |
+[PROCESS] Avg Temp: 23.5°C Avg Hum: 45.32% (Samples: 1)
+[ALERT] Rapid temp change: 23.5°C -> 30.2°C
+[MONITOR] Tick:3 Heap:72% Errors:1
+[COMMAND] Tick:5 Processing:STATUS -> OK (Cmd #1)
+
+
+Notes
+
+All tasks use static memory allocation for reliability in embedded systems.
+
+Rapid temperature change threshold is set to 5°C by default.
+
+Alerts are displayed with red color in the console using ANSI escape codes.
+
+License
+
+This project is MIT Licensed. You are free to use, modify, and distribute it.
 
