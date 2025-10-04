@@ -1,71 +1,102 @@
-The [FreeRTOS 202411.00](https://github.com/FreeRTOS/FreeRTOS/tree/202411.00) release updates FreeRTOS Kernel, FreeRTOS+TCP, coreMQTT, corePKCS11, coreHTTP, coreJSON, AWS IoT Over-the-air-Updates (OTA), AWS IoT Device Shadow, AWS IoT Jobs, AWS IoT Device Defender, Backoff Algorithm, AWS IoT Fleet Provisioning, coreSNTP, SigV4, and FreeRTOS Cellular Interface libraries to their [202406-LTS](https://github.com/FreeRTOS/FreeRTOS-LTS/blob/202406-LTS/CHANGELOG.md) versions. It also updates coreMQTT Agent to v1.3.0 and MbedTLS to v3.5.1. This release also adds ARMv7-R No_GIC Port Demo, ARMv7-R MPU Port Demos and FreeRTOS_Plus_TCP_IPv6_Demo Windows Simulator Demo. Additionally, all WinSim Demos are updated to use TLSv1.3. This release also updates WolfSSL to version v5.6.4.
+# Embedded Data Logger Project
 
-The [FreeRTOS 202212.00](https://github.com/FreeRTOS/FreeRTOS/tree/202212.00) release updates FreeRTOS Kernel, FreeRTOS+TCP, coreMQTT, corePKCS11, coreHTTP, coreJSON, AWS IoT Over-the-air-Updates (OTA), AWS IoT Device Shadow, AWS IoT Jobs, AWS IoT Device Defender, Backoff Algorithm, AWS IoT Fleet Provisioning, coreSNTP, SigV4, and FreeRTOS Cellular Interface libraries to their [LTS 2.0](https://github.com/FreeRTOS/FreeRTOS-LTS/blob/202210-LTS/CHANGELOG.md) versions. It also updates coreMQTT Agent to v1.2.0 to be compatible with coreMQTT v2.X.X, and updates MbedTLS to v3.2.1. This release also adds Visual Studio static library projects for the FreeRTOS Kernel, FreeRTOS+TCP, Logging, MbedTLS, coreHTTP, and corePKCS11. With the addition of the static library projects, all Visual Studio projects have been updated to use them. Additionally, all demos dependent on coreMQTT have been updated to work with coreMQTT v2.X.X.
+## Overview
+This project is a simulated **Embedded Data Logger** using **FreeRTOS** on a Cortex-M microcontroller architecture (via QEMU).  
+It reads sensor data (temperature, humidity, and light), processes averages, detects rapid temperature changes, logs the data, and handles commands.
 
-## Getting started
-The [FreeRTOS.org](https://www.freertos.org) website contains a [FreeRTOS Kernel Quick Start Guide](https://www.freertos.org/Documentation/01-FreeRTOS-quick-start/01-Beginners-guide/02-Quick-start-guide), a [list of supported devices and compilers](https://www.freertos.org/RTOS_ports.html), the [API reference](https://www.freertos.org/Documentation/02-Kernel/04-API-references/01-Task-creation/00-TaskHandle), and many other resources.
+The project is fully implemented with FreeRTOS tasks, queues, and static memory allocation for safe, real-time operation.
 
-### Getting help
-You can use your Github login to get support from both the FreeRTOS community and directly from the primary FreeRTOS developers on our [active support forum](https://forums.freertos.org).  The [FAQ](https://www.freertos.org/Why-FreeRTOS/FAQs) provides another support resource.
+---
 
-## Cloning this repository
-This repo uses [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to bring in dependent components.
+## Features
 
-**Note:** If you download the ZIP file provided by the GitHub UI, you will not get the contents of the submodules. (The ZIP file is also not a valid git repository)
+- **Sensor Reading**: Simulates temperature, humidity, and light sensors.
+- **Data Processing**: Calculates average temperature and humidity over samples.
+- **Alerts**: Detects rapid temperature changes and prints alerts in red.
+- **Data Logging**: Logs sensor data for analysis.
+- **System Monitoring**: Monitors system heap usage and error counts.
+- **Command Handling**: Supports simulated commands (`STATUS`, `READ_SENSORS`, `CALIBRATE`).
 
-If using Windows, because this repository and its submodules contain symbolic links, set `core.symlinks` to true with the following command:
-```
-git config --global core.symlinks true
-```
-In addition to this, either enable [Developer Mode](https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development) or, whenever using a git command that writes to the system (e.g. `git pull`, `git clone`, and `git submodule update --init --recursive`), use a console elevated as administrator so that git can properly create symbolic links for this repository. Otherwise, symbolic links will be written as normal files with the symbolic links' paths in them as text. [This](https://blogs.windows.com/windowsdeveloper/2016/12/02/symlinks-windows-10/) gives more explanation.
+---
 
-To clone using HTTPS:
-```
-git clone https://github.com/FreeRTOS/FreeRTOS.git --recurse-submodules
-```
-Using SSH:
-```
-git clone git@github.com:FreeRTOS/FreeRTOS.git --recurse-submodules
-```
+## Project Structure
 
-If you have downloaded the repo without using the `--recurse-submodules` argument, you need to run:
-```
-git submodule update --init --recursive
-```
-
-## Repository structure
-This repository contains the FreeRTOS Kernel, a number of supplementary libraries including the LTS ones, and a comprehensive set of example projects.  Many libraries (including the FreeRTOS kernel) are included as Git submodules from their own Git repositories.
-
-### Kernel source code and example projects
-```FreeRTOS/Source``` contains the FreeRTOS kernel source code (submoduled from https://github.com/FreeRTOS/FreeRTOS-Kernel).
-
-```FreeRTOS/Demo``` contains pre-configured example projects that demonstrate the FreeRTOS kernel executing on different hardware platforms and using different compilers.
-
-### Supplementary library source code and example projects
-```FreeRTOS-Plus/Source``` contains source code for additional FreeRTOS component libraries, as well as select partner provided libraries. These subdirectories contain further readme files and links to documentation.
-
-```FreeRTOS-Plus/Demo``` contains pre-configured example projects that demonstrate the FreeRTOS kernel used with the additional FreeRTOS component libraries.
-
-## Previous releases
-[Releases](https://github.com/FreeRTOS/FreeRTOS/releases) contains older FreeRTOS releases.
+EmbeddedDataLogger/
+├── FreeRTOS/ # FreeRTOS source files
+├── Demo/ # Demo project files
+├── build/ # Build output (binaries)
+├── main.c # Main source code (tasks and scheduler)
+├── README.md # This file
+└── Makefile / project files
 
 
-## FreeRTOS Lab Projects
-FreeRTOS Lab projects are libraries and demos that are fully functional, but may be experimental or undergoing optimizations and refactorization to improve memory usage, modularity, documentation, demo usability, or test coverage.
+---
 
-Most FreeRTOS Lab libraries can be found in the [FreeRTOS-Labs repository](https://github.com/FreeRTOS/FreeRTOS-Labs).
+## Tasks Overview
 
-A number of FreeRTOS Lab Demos can be found in the [FreeRTOS Github Organization](https://github.com/FreeRTOS) by searching for "Lab" or following [this link](https://github.com/FreeRTOS?q=Lab&type=&language=) to the search results.
+| Task Name          | Priority                  | Purpose |
+|-------------------|---------------------------|---------|
+| SensorReaderTask   | High (SENSOR_TASK_PRIO)  | Read sensors and send data to queue |
+| DataProcessorTask  | Medium (PROCESS_TASK_PRIO)| Calculate averages and generate alerts |
+| AlertTask          | Low (ALERT_TASK_PRIO)     | Print alert messages |
+| DataLoggerTask     | Low (LOGGER_TASK_PRIO)    | Log sensor data |
+| SystemMonitorTask  | Medium (MONITOR_TASK_PRIO)| Monitor system health |
+| CommandHandlerTask | Medium (COMMAND_TASK_PRIO)| Handle commands from queue |
 
-## coreMQTT Agent Demos
-The [FreeRTOS/coreMQTT-Agent-Demos](https://github.com/FreeRTOS/coreMQTT-Agent-Demos) repository contains demos to showcase use of the [coreMQTT-Agent](https://github.com/FreeRTOS/coreMQTT-Agent) library to share an MQTT connection between multiple application tasks.
+---
 
-The demos show a single MQTT connection usage between multiple application tasks for interacting with AWS services (including [Over-the-air-Updates](https://docs.aws.amazon.com/freertos/latest/userguide/freertos-ota-dev.html), [Device Shadow](https://docs.aws.amazon.com/iot/latest/developerguide/iot-device-shadows.html),
- [Device Defender](https://docs.aws.amazon.com/iot/latest/developerguide/device-defender.html)) alongside performing simple Publish-Subscribe operations.
-## CBMC
+## Dependencies
 
-The `FreeRTOS/Test/CBMC/proofs` directory contains CBMC proofs.
+- [FreeRTOS](https://www.freertos.org/)
+- GCC ARM toolchain
+- QEMU ARM emulator
 
-To learn more about CBMC and proofs specifically, review the training material [here](https://model-checking.github.io/cbmc-training).
+---
 
-In order to run these proofs you will need to install CBMC and other tools by following the instructions [here](https://model-checking.github.io/cbmc-training/installation.html).
+## How to Run
+
+1. **Build the project** using GCC (IAR or other toolchains can also be used).  
+2. **Run in QEMU**:
+```bash
+qemu-system-arm -machine mps2-an385 -cpu cortex-m3 \
+-kernel build/output/RTOSDemo.out \
+-monitor none -nographic -serial stdio
+
+
+Observe the logs in the console:
+
+Sensor readings
+
+Processed averages
+
+Alerts for rapid temperature changes
+
+System monitor messages
+
+Command handling messages
+
+Sample Output
+
+--- SENSOR LOG START ---
+| Tick | Temp(°C) | Humidity(%) | Light(lux) |
+---------------------------------------------
+| 1    | 23.5     | 45.32       | 400        |
+[PROCESS] Avg Temp: 23.5°C Avg Hum: 45.32% (Samples: 1)
+[ALERT] Rapid temp change: 23.5°C -> 30.2°C
+[MONITOR] Tick:3 Heap:72% Errors:1
+[COMMAND] Tick:5 Processing:STATUS -> OK (Cmd #1)
+
+
+Notes
+
+All tasks use static memory allocation for reliability in embedded systems.
+
+Rapid temperature change threshold is set to 5°C by default.
+
+Alerts are displayed with red color in the console using ANSI escape codes.
+
+License
+
+This project is MIT Licensed. You are free to use, modify, and distribute it.
+
+
